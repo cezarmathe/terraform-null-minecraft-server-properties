@@ -2,5 +2,5 @@
 
 output "this" {
   description = "A minecraft server configuration."
-  value       = ""
+  value       = local.configuration
 }
