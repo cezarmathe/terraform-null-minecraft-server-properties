@@ -2,12 +2,13 @@
 
 import requests
 from bs4 import BeautifulSoup
+import subprocess
 
 SERVER_PROPERTIES_URL = 'https://minecraft.fandom.com/wiki/Server.properties'
 
-tf_var_file_header = """
-# terraform-null-minecraft-server-properties - variables.tf
-"""
+tf_main_file_header = "# terraform-null-minecraft-server-properties - main.tf\n"
+
+tf_var_file_header = "# terraform-null-minecraft-server-properties - variables.tf\n"
 
 tf_var_template: str = """
 variable \"{tf_var_name}\" {{
@@ -94,6 +95,23 @@ def main():
         file.write(tf_var_file_header)
         for property in properties:
             file.write(property.to_tf_var())
+
+    with open("main.tf", "w") as file:
+        file.write(tf_main_file_header)
+        file.write("""
+locals {
+  configuration = templatefile("server.properties.tpl", {
+""")
+        for property in properties:
+            file.write("    ")
+            file.write("{tf_var_name} = var.{tf_var_name}".format(
+                tf_var_name = property.tf_var_name)
+            )
+            file.write('\n')
+        file.write("""  })
+}
+""")
+    subprocess.run(["terraform", "fmt"])
 
 if __name__ == "__main__":
     main()
