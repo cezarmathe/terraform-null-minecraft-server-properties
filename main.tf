@@ -1,7 +1,7 @@
 # terraform-null-minecraft-server-properties - main.tf
 
 locals {
-  configuration = templatefile("server.properties.tpl", {
+  configuration = templatefile("${path.module}/server.properties.tpl", {
     spawn_protection                  = var.spawn_protection
     max_tick_time                     = var.max_tick_time
     query_port                        = var.query_port
